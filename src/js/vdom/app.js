@@ -1,11 +1,43 @@
-import { render } from "./render";
+import { patch } from "./patch";
 
-export const app = ({ root, initialState, view }) => {
+export const app = ({ root, initialState, view, actions }) => {
   const $el = document.querySelector(root);
-  let newNode = view(initialState);
+
+  let newNode;
+
+  let oldNode;
+
+  let state = initialState;
+
+  const dispatcher = function (actions) {
+    const dispatchedActions = {};
+
+    for (const key in actions) {
+      const action = actions[key];
+
+      dispatchedActions[key] = (option) => {
+        setState(action(state, option));
+        renderDOM();
+      };
+    }
+    return dispatchedActions;
+  };
+
+  const setState = function (newState) {
+    if (state !== newState) {
+      state = newState;
+    }
+  };
+
+  const updateNode = function () {
+    newNode = view(state, dispatcher(actions));
+  };
 
   const renderDOM = function () {
-    $el.appendChild(render(newNode));
+    updateNode();
+
+    patch($el, newNode, oldNode);
+    oldNode = newNode;
   };
 
   renderDOM();
