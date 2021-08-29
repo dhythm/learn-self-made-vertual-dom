@@ -1,5 +1,5 @@
 import h from "./vdom/createElement";
-import { render } from "./vdom/render";
+import { app } from "./vdom/app";
 
 const INITIAL_STATE = {
   accounts: [
@@ -63,6 +63,7 @@ const accountItem = (account) => {
                 attrs: {
                   type: "button",
                   class: `followBtn ${account.isFollow ? "isFollow" : ""}`,
+                  onclick: () => alert(account.name),
                 },
                 children: [account.isFollow ? "フォロー中" : "フォローする"],
               }),
@@ -95,6 +96,8 @@ const view = (props) =>
     }),
   });
 
-const $app = render(view(INITIAL_STATE));
-const el = document.getElementById("app");
-el.appendChild($app);
+app({
+  root: "#app",
+  initialState: INITIAL_STATE,
+  view,
+});
